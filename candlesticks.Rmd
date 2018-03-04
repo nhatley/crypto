@@ -1,0 +1,116 @@
+---
+title: "Crpyto Charts"
+author: "Nick Hatley"
+date: 2018-03-03T20:50:11-05:00
+categories: ["R"]
+output:
+  html_document:
+      highlight: tango
+  theme: cosmo
+tags: ["R Markdown"]
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning =  FALSE)
+knitr::opts_chunk$set(message = FALSE)
+options(knitr.table.format = "html") 
+```
+
+
+```{r get librarys, function and data}
+library(tidyverse)
+library(plotly)
+library(knitr)
+library(htmltools)
+library(kableExtra)
+
+bitstamp_btc_usd = "BITSTAMP_SPOT_BTC_USD"
+bitstamp_eth_usd = "BITSTAMP_SPOT_ETH_USD"
+bitstamp_ltc_usd = "BITSTAMP_SPOT_LTC_USD"
+bitstamp_xrp_usd = "BITSTAMP_SPOT_XRP_USD"
+bitstamp_bch_usd = "BITSTAMP_SPOT_BCH_USD"
+
+coins = list(bitstamp_btc_usd, bitstamp_eth_usd, bitstamp_ltc_usd, 
+             bitstamp_xrp_usd, bitstamp_bch_usd)
+
+all_data = read_rds("data/historical/btc_eth_ltc_xrp_bch.rds")
+
+make_ohlc_candlestick_md <- function(symbol_in, time_frame) {
+    df2 = all_data %>%
+    filter(duration==time_frame) %>% 
+    filter(symbol==symbol_in) 
+      
+    p = df2 %>% 
+    plotly::plot_ly(x = ~time_open, y = ~price_close, type="candlestick",
+            open = ~price_open, close = ~price_close,
+            high = ~price_high, low = ~price_low) %>%
+    plotly::add_lines(x = ~time_open, y = ~price_close, 
+              line = list(color = 'black', width = 0.75), inherit = F) %>%
+    plotly::layout(showlegend = FALSE) %>% 
+    plotly::layout(title = paste0(symbol_in))
+    
+plot(p)
+}
+```
+
+## Cryptocurrency Candlestick Charts
+If you aren't keen on finance or if you are new to these kinds of charts, as I was, I'll explain them briefly:
+
+>Each individual bars reoresent a day. The low point of the bars represent the low-point for the coin that day and so forth for the high/high point. The coloring represents where the coin closed that day in respect to the prior day. Red = below, Green = above.
+
+The charts are interactive and they include a 'rangeslider' on the bottom that allows you to zoom into specific time-spans.
+
+The tabs allow you to start from different time outlooks.  
+
+##{.tabset .tabset-fade .tabset-pills}
+### Six months
+```{r, six_months, fig.width=8, fig.height=6.5}
+    all_data %>%
+    filter(duration=="six_months") %>% 
+    filter(symbol=="BITSTAMP_SPOT_BTC_USD")  %>% 
+    plotly::plot_ly(x = ~time_open, type="candlestick",
+            open = ~price_open, close = ~price_close,
+            high = ~price_high, low = ~price_low) %>%
+    plotly::layout(showlegend = FALSE) %>% 
+    plotly::layout(title = "BITSTAMP_SPOT_BTC_USD")
+```
+
+*************
+
+```{r, six_months eth, fig.width=8, fig.height=8}
+    all_data %>%
+    filter(duration=="six_months") %>% 
+    filter(symbol=="BITSTAMP_SPOT_ETH_USD")  %>% 
+    plotly::plot_ly(x = ~time_open, type="candlestick",
+            open = ~price_open, close = ~price_close,
+            high = ~price_high, low = ~price_low) %>%
+    plotly::layout(showlegend = FALSE) %>% 
+    plotly::layout(title = "BITSTAMP_SPOT_ETH_USD")
+```
+
+*************
+
+```{r, six_months ltc, fig.width=8, fig.height=8}
+    all_data %>%
+    filter(duration=="six_months") %>% 
+    filter(symbol=="BITSTAMP_SPOT_LTC_USD")  %>% 
+    plotly::plot_ly(x = ~time_open, type="candlestick",
+            open = ~price_open, close = ~price_close,
+            high = ~price_high, low = ~price_low) %>%
+    plotly::layout(showlegend = FALSE) %>% 
+    plotly::layout(title = "BITSTAMP_SPOT_LTC_USD")
+```
+
+*************
+
+```{r, six_months xrp, fig.width=8, fig.height=8}
+    all_data %>%
+    filter(duration=="six_months") %>% 
+    filter(symbol=="BITSTAMP_SPOT_XRP_USD")  %>% 
+    plotly::plot_ly(x = ~time_open, type="candlestick",
+            open = ~price_open, close = ~price_close,
+            high = ~price_high, low = ~price_low) %>%
+    plotly::layout(showlegend = FALSE) %>% 
+    plotly::layout(title = "BITSTAMP_SPOT_XRP_USD")
+```
+
